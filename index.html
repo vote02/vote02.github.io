@@ -2335,11 +2335,7 @@ body {
     </div>
 
     <script>
-        // Pi SDK 初始化
-        Pi.init({ 
-            version: "2.0", 
-            sandbox: false // 设置为 false 使用正式环境，true 使用沙盒环境
-        });
+        // Pi SDK 将在登录时初始化
         
         // Pi App 配置
         const PI_APP_CONFIG = {
@@ -4403,12 +4399,12 @@ body {
                      }
                  });
                  
-                 // 定期检查过期项目
-                 setInterval(() => {
-                     if (gameApp) {
-                         gameApp.handleTimedOutProjects();
-                     }
-                 }, 60000); // 每分钟检查一次
+                 // 定期检查过期项目（功能暂未实现）
+                 // setInterval(() => {
+                 //     if (gameApp) {
+                 //         gameApp.handleTimedOutProjects();
+                 //     }
+                 // }, 60000); // 每分钟检查一次
                  
                  // 定期刷新数据
                  setInterval(() => {
