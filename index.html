@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>大众投票平台</title>
+    <!-- Pi Network SDK -->
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <style>
 /* 通用样式 */
 * {
@@ -2329,6 +2331,21 @@ body {
     </div>
 
     <script>
+        // Pi SDK 初始化
+        Pi.init({ 
+            version: "2.0", 
+            sandbox: false // 设置为 false 使用正式环境，true 使用沙盒环境
+        });
+        
+        // Pi App 配置
+        const PI_APP_CONFIG = {
+            appId: '6f104bbc3618606c', // 您的 Pi App ID
+            scopes: ['username', 'payments'], // 请求的权限范围
+            sandbox: false // 是否使用沙盒环境
+        };
+        
+        console.log('Pi SDK 已初始化，App ID:', PI_APP_CONFIG.appId);
+        
         // 投票游戏平台类
         class GuessGamePlatform {
             constructor() {
@@ -2531,6 +2548,7 @@ body {
              // Pi SDK登录
              async login() {
                  console.log('开始Pi SDK登录流程...');
+                 console.log('使用App ID:', PI_APP_CONFIG.appId);
                  
                  try {
                      // 检查Pi SDK是否可用
@@ -2542,35 +2560,24 @@ body {
                      
                      console.log('Pi SDK状态检查...');
                      
-                     // 等待Pi SDK初始化
-                     let sdkReady = false;
-                     let attempts = 0;
-                     const maxAttempts = 10;
-                     
-                     while (!sdkReady && attempts < maxAttempts) {
-                         try {
-                             // 尝试调用Pi SDK方法来检查是否就绪
-                             await Pi.init({ version: "2.0", sandbox: false });
-                             sdkReady = true;
-                             console.log('Pi SDK初始化成功');
-                         } catch (error) {
-                             console.log(`Pi SDK初始化尝试 ${attempts + 1}/${maxAttempts} 失败:`, error.message);
-                             attempts++;
-                             if (attempts < maxAttempts) {
-                                 await new Promise(resolve => setTimeout(resolve, 1000)); // 等待1秒后重试
-                             }
-                         }
-                     }
-                     
-                     if (!sdkReady) {
+                     // 检查Pi SDK是否已初始化
+                     try {
+                         // 使用配置的参数重新初始化（确保使用正确的配置）
+                         await Pi.init({ 
+                             version: "2.0", 
+                             sandbox: PI_APP_CONFIG.sandbox 
+                         });
+                         console.log('Pi SDK初始化成功，环境:', PI_APP_CONFIG.sandbox ? '沙盒' : '正式');
+                     } catch (error) {
+                         console.error('Pi SDK初始化失败:', error);
                          throw new Error('Pi SDK初始化失败，请刷新页面重试');
                      }
                      
                      console.log('开始Pi用户认证...');
+                     console.log('请求权限范围:', PI_APP_CONFIG.scopes);
                      
-                     // 进行用户认证
-                     const scopes = ['username', 'payments'];
-                     const authResult = await Pi.authenticate(scopes, this.onIncompletePaymentFound.bind(this));
+                     // 进行用户认证，使用配置的权限范围
+                     const authResult = await Pi.authenticate(PI_APP_CONFIG.scopes, this.onIncompletePaymentFound.bind(this));
                      
                      console.log('Pi认证结果:', authResult);
                      
@@ -2608,7 +2615,8 @@ body {
                      const apiUrl = `${this.apiConfig.baseURL}${this.apiConfig.endpoints.auth}/pi-login`;
                      const requestData = {
                          accessToken: authResult.accessToken,
-                         user: authResult.user
+                         user: authResult.user,
+                         appId: PI_APP_CONFIG.appId // 添加App ID到请求中
                      };
                      
                      console.log('发送API请求到:', apiUrl);
