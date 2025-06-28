@@ -1,0 +1,71 @@
+{
+  "name": "pi-voting-app",
+  "version": "1.0.0",
+  "description": "Pi Network区块链积分投票应用 - 轻量级前端交互层",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx live-server --port=8080 --open=/index.html",
+    "build": "echo 'No build process needed for static files'",
+    "deploy": "gh-pages -d .",
+    "lint": "eslint *.js",
+    "format": "prettier --write *.{html,css,js,md}"
+  },
+  "keywords": [
+    "pi-network",
+    "blockchain",
+    "voting",
+    "dapp",
+    "frontend",
+    "javascript",
+    "html5",
+    "css3"
+  ],
+  "author": {
+    "name": "Pi Voting App Developer",
+    "email": "developer@example.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/pi-voting-app.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/pi-voting-app/issues"
+  },
+  "homepage": "https://yourusername.github.io/pi-voting-app",
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "prettier": "^2.8.0",
+    "live-server": "^1.2.2",
+    "serve": "^14.0.0",
+    "gh-pages": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "browserslist": [
+    "last 2 Chrome versions",
+    "last 2 Safari versions",
+    "last 2 Firefox versions",
+    "last 2 Edge versions"
+  ],
+  "pi-network": {
+    "sdk-version": "latest",
+    "target-browser": "pi-browser",
+    "app-type": "frontend-only",
+    "features": [
+      "authentication",
+      "local-storage",
+      "voting-system",
+      "points-management"
+    ]
+  },
+  "files": [
+    "index.html",
+    "styles.css",
+    "app.js",
+    "README.md"
+  ]
+}

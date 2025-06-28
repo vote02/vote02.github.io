@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大众投票平台</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 头部区域 -->
+        <header class="header">
+            <div class="logo-section">
+                <div class="logo-icon">📦</div>
+                <h1 class="app-title">大众投票平台</h1>
+            </div>
+            <p class="subtitle" id="subtitle">参与投票获取奖励</p>
+            <div class="user-info" id="userInfo" style="display: none;">
+                <div class="user-name" id="userName"></div>
+                <div class="user-points" id="userPoints" onclick="showPointsDetailModal()" style="cursor: pointer;"></div>
+            </div>
+            
+            <!-- 操作按钮区域 -->
+            <div class="action-buttons">
+                <button class="btn btn-recharge" onclick="showRechargeModal()">充值</button>
+                <button class="btn btn-login" id="loginBtn" onclick="handleLogin()">登录</button>
+                <button class="btn btn-withdraw" onclick="showWithdrawModal()">提现</button>
+            </div>
+        </header>
+
+        <!-- 主要内容区域 -->
+        <main class="main-content">
+            <!-- 所有项目卡片 -->
+            <div class="card-container">
+                <div class="card-header" onclick="toggleCard('allProjects')">
+                    <div class="card-title">
+                        <span class="card-icon">🏆</span>
+                        <span>所有项目</span>
+                    </div>
+                    <span class="expand-arrow" id="allProjectsArrow">▼</span>
+                </div>
+                <div class="card-content" id="allProjectsContent">
+                    <div id="projectsList"></div>
+                </div>
+            </div>
+
+            <!-- 创建项目卡片 -->
+            <div class="card-container" id="createProject">
+                <div class="card-header" onclick="toggleCard('createProject')">
+                    <div class="card-title">
+                        <span class="card-icon">➕</span>
+                        <span>创建项目</span>
+                    </div>
+                    <span class="expand-arrow" id="createProjectArrow">▼</span>
+                </div>
+                <div class="card-content" id="createProjectContent">
+                    <form id="createProjectForm">
+                        <div class="form-group">
+                            <label for="projectTitle">项目标题 * (最多11个字符)</label>
+                            <input type="text" id="projectTitle" placeholder="请输入项目标题" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="projectDescription">项目描述 *</label>
+                            <textarea id="projectDescription" maxlength="100" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="endTime">截止时间 *</label>
+                            <input type="datetime-local" id="endTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="maxPoints">单个选项最高可投积分 *</label>
+                            <input type="number" id="maxPoints" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>投票选项</label>
+                            <div class="vote-options-preview">
+                                <div class="vote-option-preview">
+                                    <span class="option-text">是</span>
+                                    <span class="option-description">支持该项目</span>
+                                </div>
+                                <div class="vote-option-preview">
+                                    <span class="option-text">否</span>
+                                    <span class="option-description">反对该项目</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">创建项目</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 我的项目卡片 -->
+            <div class="card-container">
+                <div class="card-header" onclick="toggleCard('myProjects')">
+                    <div class="card-title">
+                        <span class="card-icon">📁</span>
+                        <span>我的项目</span>
+                    </div>
+                    <span class="expand-arrow" id="myProjectsArrow">▼</span>
+                </div>
+                <div class="card-content" id="myProjectsContent">
+                    <div class="tab-container">
+                        <div class="tab-buttons">
+                            <button class="tab-btn active" onclick="switchTab('created')">我创建的</button>
+                            <button class="tab-btn" onclick="switchTab('participated')">我参与的</button>
+                        </div>
+                        <div class="tab-content">
+                            <div id="createdProjects" class="tab-panel active"></div>
+                            <div id="participatedProjects" class="tab-panel"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 游戏规则卡片 -->
+            <div class="card-container">
+                <div class="card-header" onclick="toggleCard('gameRules')">
+                    <div class="card-title">
+                        <span class="card-icon">📋</span>
+                        <span>游戏规则</span>
+                    </div>
+                    <span class="expand-arrow" id="gameRulesArrow">▼</span>
+                </div>
+                <div class="card-content" id="gameRulesContent">
+                    <div class="rules-section">
+                        <h3>积分获取规则</h3>
+                        <ul>
+                            <li>参与投票：+10积分/次</li>
+                            <li>创建有效项目：+50积分</li>
+                        </ul>
+                    </div>
+                    <div class="rules-section">
+                        <h3>积分消耗规则</h3>
+                        <ul>
+                            <li>提现需扣除5%积分作为手续费</li>
+                        </ul>
+                    </div>
+                    <div class="rules-section">
+                        <h3>投票有效性</h3>
+                        <ul>
+                            <li>每个项目每个地址限投1次</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 充值模态框 -->
+    <div id="rechargeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>充值</h2>
+                <span class="close" onclick="closeModal('rechargeModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="address-section">
+                    <label>收币地址：</label>
+                    <div class="address-display" id="rechargeAddress">Pi1234567890abcdef...</div>
+                </div>
+                <div class="tutorial-section">
+                    <h3>充值教程</h3>
+                    <ol>
+                        <li>打开Pi钱包</li>
+                        <li>选择转账</li>
+                        <li>输入上方地址</li>
+                        <li>确认金额后提交</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提现模态框 -->
+    <div id="withdrawModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>提现</h2>
+                <span class="close" onclick="closeModal('withdrawModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="withdrawForm">
+                    <div class="form-group">
+                        <label for="withdrawAddress">提币地址 *</label>
+                        <input type="text" id="withdrawAddress" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="withdrawAmount">提现金额 *</label>
+                        <input type="number" id="withdrawAmount" min="1" required>
+                    </div>
+                    <div class="info-section">
+                        <p><strong>提现说明：</strong></p>
+                        <ul>
+                            <li>提现到账时间：1小时内</li>
+                            <li>手续费：10%</li>
+                        </ul>
+                    </div>
+                    <button type="submit" class="btn btn-primary">确认提现</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 投票模态框 -->
+    <div id="voteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>投票</h2>
+                <span class="close" onclick="closeModal('voteModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="voteContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 积分明细模态框 -->
+    <div id="pointsDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>积分明细</h2>
+                <span class="close" onclick="closeModal('pointsDetailModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="points-summary">
+                    <div class="current-points">
+                        <span class="points-label">当前积分：</span>
+                        <span class="points-value" id="currentPointsDisplay">0</span>
+                    </div>
+                </div>
+                <div class="points-history">
+                    <h3>积分记录</h3>
+                    <div id="pointsHistoryList" class="history-list">
+                        <!-- 积分记录将在这里动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 公布结果模态框 -->
+    <div id="publishResultModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>公布项目结果</h2>
+                <span class="close" onclick="closeModal('publishResultModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="publishResultContent">
+                    <!-- 内容将动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
